@@ -1,31 +1,26 @@
-import { useCallback, useMemo, useState } from "react";
-import ProductList from "./components/ProductList";
-import Parent from "./components/Parent";
+import { Routes, Route } from "react-router-dom";
+import Login from "./pages/Login";
+// import Dashboard from "./pages/Dashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { lazy, Suspense } from "react";
+
+const Dashboard = lazy(() => import("./pages/Dashboard"));
 
 export default function App() {
-  const [count, setCount] = useState(0);
-
-  const products = useMemo(
-    () => [
-      { id: 1, name: "Laptop" },
-      { id: 2, name: "Phone" },
-    ],
-    []
-  );
-
-  const logMessage = useCallback(() => {
-    console.log("Button clicked!");
-  }, []);
-
   return (
-    <div>
-      <h1>Day 4</h1>
-      <Parent />
+    <Suspense fallback={<h2>Loading Dashboard...</h2>}>
+      <Routes>
+        <Route path="/" element={<Login />} />
 
-      <h1>App Count: {count}</h1>
-      <button onClick={() => setCount(count + 1)}>Increase</button>
-      <button onClick={logMessage}>Log</button>
-      <ProductList products={products} />
-    </div>
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </Suspense>
   );
 }
